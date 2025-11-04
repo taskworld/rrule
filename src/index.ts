@@ -13,12 +13,10 @@
  * https://github.com/jakubroztocil/rrule/blob/master/LICENCE
  *
  */
-
 export { RRule } from './rrule'
 export { RRuleSet } from './rruleset'
 
-export { rrulestr } from './rrulestr'
-export { Frequency, ByWeekday, Options } from './types'
-export { Weekday, WeekdayStr, ALL_WEEKDAYS } from './weekday'
-export { RRuleStrOptions } from './rrulestr'
-export { datetime } from './dateutil'
+export { datetime } from './date-util'
+export { rrulestr, RRuleStrOptions } from './rrulestr'
+export { ByWeekday, Frequency, Options } from './types'
+export { ALL_WEEKDAYS, Weekday, WeekdayStr } from './weekday'

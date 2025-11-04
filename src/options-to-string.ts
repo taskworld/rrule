@@ -1,9 +1,9 @@
+import { untilTimeToString } from './date-util'
+import { DateWithZone } from './date-with-zone'
+import { isDefined, isNumber, toArray } from './helpers'
+import { DEFAULT_OPTIONS, RRule } from './rrule'
 import { Options } from './types'
-import { RRule, DEFAULT_OPTIONS } from './rrule'
-import { includes, isPresent, isArray, isNumber, toArray } from './helpers'
 import { Weekday } from './weekday'
-import { timeToUntilString } from './dateutil'
-import { DateWithZone } from './datewithzone'
 
 export function optionsToString(options: Partial<Options>) {
   const rrule: string[][] = []
@@ -13,13 +13,13 @@ export function optionsToString(options: Partial<Options>) {
 
   for (let i = 0; i < keys.length; i++) {
     if (keys[i] === 'tzid') continue
-    if (!includes(defaultKeys, keys[i])) continue
+    if (!defaultKeys.includes(keys[i])) continue
 
     let key = keys[i].toUpperCase()
     const value = options[keys[i]]
     let outValue = ''
 
-    if (!isPresent(value) || (isArray(value) && !value.length)) continue
+    if (!isDefined(value) || (Array.isArray(value) && !value.length)) continue
 
     switch (key) {
       case 'FREQ':
@@ -53,7 +53,7 @@ export function optionsToString(options: Partial<Options>) {
               return wday
             }
 
-            if (isArray(wday)) {
+            if (Array.isArray(wday)) {
               return new Weekday(wday[0], wday[1])
             }
 
@@ -67,11 +67,11 @@ export function optionsToString(options: Partial<Options>) {
         break
 
       case 'UNTIL':
-        outValue = timeToUntilString(value as number, !options.tzid)
+        outValue = untilTimeToString(value as number, !options.tzid)
         break
 
       default:
-        if (isArray(value)) {
+        if (Array.isArray(value)) {
           const strValues: string[] = []
           for (let j = 0; j < value.length; j++) {
             strValues[j] = String(value[j])

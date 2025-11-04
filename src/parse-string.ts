@@ -1,7 +1,7 @@
-import { Options, Frequency } from './types'
-import { Weekday } from './weekday'
-import { untilStringToDate } from './dateutil'
+import { untilStringToDate } from './date-util'
 import { Days } from './rrule'
+import { Frequency, Options } from './types'
+import { Weekday } from './weekday'
 
 export function parseString(rfcString: string): Partial<Options> {
   const options = rfcString

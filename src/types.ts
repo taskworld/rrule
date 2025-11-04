@@ -1,6 +1,6 @@
 import { Weekday, WeekdayStr } from './weekday'
 
-export interface QueryMethods {
+export type QueryMethods = {
   all(): Date[]
   between(after: Date, before: Date, inc: boolean): Date[]
   before(date: Date, inc: boolean): Date | null
@@ -34,26 +34,26 @@ export function freqIsDailyOrGreater(
   return freq < Frequency.HOURLY
 }
 
-export interface Options {
+export type Options = {
   freq: Frequency
-  dtstart: Date | null
+  dtstart?: Date
   interval: number
-  wkst: Weekday | number | null
-  count: number | null
-  until: Date | null
-  tzid: string | null
-  bysetpos: number | number[] | null
-  bymonth: number | number[] | null
-  bymonthday: number | number[] | null
-  bynmonthday: number[] | null
-  byyearday: number | number[] | null
-  byweekno: number | number[] | null
-  byweekday: ByWeekday | ByWeekday[] | null
-  bynweekday: number[][] | null
-  byhour: number | number[] | null
-  byminute: number | number[] | null
-  bysecond: number | number[] | null
-  byeaster: number | null
+  wkst?: Weekday | number
+  count?: number
+  until?: Date
+  tzid?: string
+  bysetpos?: number | number[]
+  bymonth?: number | number[]
+  bymonthday?: number | number[]
+  bynmonthday?: number[]
+  byyearday?: number | number[]
+  byweekno?: number | number[]
+  byweekday?: ByWeekday | ByWeekday[]
+  bynweekday?: number[][]
+  byhour?: number | number[]
+  byminute?: number | number[]
+  bysecond?: number | number[]
+  byeaster?: number
 }
 
 export interface ParsedOptions extends Options {
@@ -71,4 +71,4 @@ export interface ParsedOptions extends Options {
   bysecond: number[]
 }
 
-export type ByWeekday = WeekdayStr | number | Weekday
+export type ByWeekday = Weekday | WeekdayStr | number

@@ -1,34 +1,18 @@
-import IterResult from '../iterresult'
-import {
-  freqIsDailyOrGreater,
-  Options,
-  ParsedOptions,
-  QueryMethodTypes,
-} from '../types'
-import { combine, fromOrdinal, MAXYEAR } from '../dateutil'
-import Iterinfo from '../iterinfo/index'
-import { RRule } from '../rrule'
-import { buildTimeset } from '../parseoptions'
-import { includes, isPresent, notEmpty } from '../helpers'
-import { DateWithZone } from '../datewithzone'
-import { buildPoslist } from './poslist'
+import { combine, fromOrdinal, MAX_YEAR } from '../date-util'
+import { DateWithZone } from '../date-with-zone'
 import { DateTime, Time } from '../datetime'
-import { optimiseOptions } from './optimiseOptions'
+import { empty, isDefined } from '../helpers'
+import Iterinfo from '../iter-info/index'
+import IterResult from '../iter-result'
+import { buildTimeset } from '../parse-options'
+import { RRule } from '../rrule'
+import { freqIsDailyOrGreater, ParsedOptions, QueryMethodTypes } from '../types'
+import { buildPosList } from './build-pos-list'
 
 export function iter<M extends QueryMethodTypes>(
   iterResult: IterResult<M>,
   parsedOptions: ParsedOptions,
-  origOptions: Partial<Options>,
-  exdateHash?: { [k: number]: boolean },
-  evalExdate?: (after: Date, before: Date) => void,
 ) {
-  parsedOptions = optimiseOptions(
-    iterResult,
-    parsedOptions,
-    origOptions,
-    exdateHash,
-    evalExdate,
-  )
   const { freq, dtstart, interval, until, bysetpos } = parsedOptions
 
   let count = parsedOptions.count
@@ -52,8 +36,8 @@ export function iter<M extends QueryMethodTypes>(
 
     const filtered = removeFilteredDays(dayset, start, end, ii, parsedOptions)
 
-    if (notEmpty(bysetpos)) {
-      const poslist = buildPoslist(bysetpos, timeset, start, end, ii, dayset)
+    if (!empty(bysetpos)) {
+      const poslist = buildPosList(bysetpos, timeset, start, end, ii, dayset)
 
       for (let j = 0; j < poslist.length; j++) {
         const res = poslist[j]
@@ -78,7 +62,7 @@ export function iter<M extends QueryMethodTypes>(
     } else {
       for (let j = start; j < end; j++) {
         const currentDay = dayset[j]
-        if (!isPresent(currentDay)) {
+        if (!isDefined(currentDay)) {
           continue
         }
 
@@ -113,7 +97,7 @@ export function iter<M extends QueryMethodTypes>(
     // Handle frequency and interval
     counterDate.add(parsedOptions, filtered)
 
-    if (counterDate.year > MAXYEAR) {
+    if (counterDate.year > MAX_YEAR) {
       return emitResult(iterResult)
     }
 
@@ -146,21 +130,21 @@ function isFiltered(
   } = options
 
   return (
-    (notEmpty(bymonth) && !includes(bymonth, ii.mmask[currentDay])) ||
-    (notEmpty(byweekno) && !ii.wnomask[currentDay]) ||
-    (notEmpty(byweekday) && !includes(byweekday, ii.wdaymask[currentDay])) ||
-    (notEmpty(ii.nwdaymask) && !ii.nwdaymask[currentDay]) ||
-    (byeaster !== null && !includes(ii.eastermask, currentDay)) ||
-    ((notEmpty(bymonthday) || notEmpty(bynmonthday)) &&
-      !includes(bymonthday, ii.mdaymask[currentDay]) &&
-      !includes(bynmonthday, ii.nmdaymask[currentDay])) ||
-    (notEmpty(byyearday) &&
+    (!empty(bymonth) && !bymonth.includes(ii.mmask[currentDay])) ||
+    (!empty(byweekno) && !ii.wnomask[currentDay]) ||
+    (!empty(byweekday) && !byweekday.includes(ii.wdaymask[currentDay])) ||
+    (!empty(ii.nwdaymask) && !ii.nwdaymask[currentDay]) ||
+    (byeaster !== null && !ii.eastermask.includes(currentDay)) ||
+    ((!empty(bymonthday) || !empty(bynmonthday)) &&
+      !bymonthday.includes(ii.mdaymask[currentDay]) &&
+      !bynmonthday.includes(ii.nmdaymask[currentDay])) ||
+    (!empty(byyearday) &&
       ((currentDay < ii.yearlen &&
-        !includes(byyearday, currentDay + 1) &&
-        !includes(byyearday, -ii.yearlen + currentDay)) ||
+        !byyearday.includes(currentDay + 1) &&
+        !byyearday.includes(-ii.yearlen + currentDay)) ||
         (currentDay >= ii.yearlen &&
-          !includes(byyearday, currentDay + 1 - ii.yearlen) &&
-          !includes(byyearday, -ii.nextyearlen + currentDay - ii.yearlen))))
+          !byyearday.includes(currentDay + 1 - ii.yearlen) &&
+          !byyearday.includes(-ii.nextyearlen + currentDay - ii.yearlen))))
   )
 }
 
@@ -204,14 +188,14 @@ function makeTimeset(
 
   if (
     (freq >= RRule.HOURLY &&
-      notEmpty(byhour) &&
-      !includes(byhour, counterDate.hour)) ||
+      !empty(byhour) &&
+      !byhour.includes(counterDate.hour)) ||
     (freq >= RRule.MINUTELY &&
-      notEmpty(byminute) &&
-      !includes(byminute, counterDate.minute)) ||
+      !empty(byminute) &&
+      !byminute.includes(counterDate.minute)) ||
     (freq >= RRule.SECONDLY &&
-      notEmpty(bysecond) &&
-      !includes(bysecond, counterDate.second))
+      !empty(bysecond) &&
+      !bysecond.includes(counterDate.second))
   ) {
     return []
   }

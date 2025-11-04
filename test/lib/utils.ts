@@ -1,12 +1,12 @@
-export { datetime } from '../../src/dateutil'
-import { RRule, RRuleSet } from '../../src'
-import { dateInTimeZone, datetime } from '../../src/dateutil'
+import { dateInTimeZone, datetime } from '../../src/date-util'
+import { RRule } from '../../src/rrule'
+import { RRuleSet } from '../../src/rruleset'
 
-export const TEST_CTX = {
-  ALSO_TESTSTRING_FUNCTIONS: false,
-  ALSO_TESTNLP_FUNCTIONS: false,
-  ALSO_TESTBEFORE_AFTER_BETWEEN: false,
-  ALSO_TESTSUBSECOND_PRECISION: false,
+export const ALSO_TEST = {
+  STRING_FUNCTIONS: false,
+  NLP_FUNCTIONS: false,
+  BEFORE_AFTER_BETWEEN: false,
+  SUBSECOND_PRECISION: false,
 }
 
 export function isNumber(maybeNumber: any): maybeNumber is number {
@@ -38,7 +38,7 @@ const extractTime = function (date: Date) {
 /**
  * dateutil.parser.parse
  */
-export const parse = function (str: string) {
+export function parse(str: string) {
   const parts = str.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/)
   const [, y, m, d, h, i, s] = parts
   const year = Number(y)
@@ -50,13 +50,13 @@ export const parse = function (str: string) {
   return datetime(year, month, day, hour, minute, second)
 }
 
-interface TestRecurring {
+type TestRecurring = {
   (m: string, testObj: unknown, expectedDates: Date | Date[]): void
   only: (...args: unknown[]) => void
   skip: (...args: unknown[]) => void
 }
 
-interface TestObj {
+type TestObj = {
   rrule: RRule
   method: 'all' | 'between' | 'before' | 'after'
   args: unknown[]
@@ -120,13 +120,13 @@ export const testRecurring = function (
     // Additional tests using the expected dates
     // ==========================================================
 
-    if (TEST_CTX.ALSO_TESTSUBSECOND_PRECISION) {
+    if (ALSO_TEST.SUBSECOND_PRECISION) {
       expect(actualDates.map(extractTime)).toEqual(
         expectedDates.map(extractTime),
       )
     }
 
-    if (TEST_CTX.ALSO_TESTSTRING_FUNCTIONS) {
+    if (ALSO_TEST.STRING_FUNCTIONS) {
       // Test toString()/fromString()
       const str = rule.toString()
       const rrule2 = RRule.fromString(str)
@@ -138,7 +138,7 @@ export const testRecurring = function (
     }
 
     if (
-      TEST_CTX.ALSO_TESTNLP_FUNCTIONS &&
+      ALSO_TEST.NLP_FUNCTIONS &&
       rule.isFullyConvertibleToText &&
       rule.isFullyConvertibleToText()
     ) {
@@ -158,7 +158,7 @@ export const testRecurring = function (
       expect(rrule3.toString()).toBe(str)
     }
 
-    if (method === 'all' && TEST_CTX.ALSO_TESTBEFORE_AFTER_BETWEEN) {
+    if (method === 'all' && ALSO_TEST.BEFORE_AFTER_BETWEEN) {
       // Test before, after, and between - use the expected dates.
       // create a clean copy of the rrule object to bypass caching
       rule = rule.clone()

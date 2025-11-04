@@ -1,10 +1,10 @@
-import { notEmpty, repeat, range, isPresent } from '../helpers'
-import { ParsedOptions, Frequency } from '../types'
-import { YearInfo, rebuildYear } from './yearinfo'
-import { rebuildMonth, MonthInfo } from './monthinfo'
-import { easter } from './easter'
+import { datetime, sort, toOrdinal } from '../date-util'
 import { Time } from '../datetime'
-import { datetime, sort, toOrdinal } from '../dateutil'
+import { empty, isDefined, range, repeat } from '../helpers'
+import { Frequency, ParsedOptions } from '../types'
+import { easter } from './easter'
+import { MonthInfo, rebuildMonth } from './month-info'
+import { YearInfo, rebuildYear } from './year-info'
 
 export type DaySet = [(number | null)[], number, number]
 export type GetDayset = () => DaySet
@@ -29,7 +29,7 @@ export default class Iterinfo {
     }
 
     if (
-      notEmpty(options.bynweekday) &&
+      !empty(options.bynweekday) &&
       (month !== this.lastmonth || year !== this.lastyear)
     ) {
       const { yearlen, mrange, wdaymask } = this.yearinfo
@@ -43,7 +43,7 @@ export default class Iterinfo {
       )
     }
 
-    if (isPresent(options.byeaster)) {
+    if (isDefined(options.byeaster)) {
       this.eastermask = easter(year, options.byeaster)
     }
   }

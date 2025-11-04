@@ -1,6 +1,6 @@
-import { ParsedOptions, Frequency } from './types'
-import { pymod, divmod, empty, includes } from './helpers'
-import { getWeekday, MAXYEAR, monthRange } from './dateutil'
+import { getWeekday, MAX_YEAR, monthRange } from './date-util'
+import { divmod, empty, pymod } from './helpers'
+import { Frequency, ParsedOptions } from './types'
 
 export class Time {
   public hour: number
@@ -153,7 +153,7 @@ export class DateTime extends Time {
         this.addDaily(dayDiv)
       }
 
-      if (empty(byhour) || includes(byhour, this.hour)) break
+      if (empty(byhour) || byhour.includes(this.hour)) break
     }
   }
 
@@ -178,8 +178,8 @@ export class DateTime extends Time {
       }
 
       if (
-        (empty(byhour) || includes(byhour, this.hour)) &&
-        (empty(byminute) || includes(byminute, this.minute))
+        (empty(byhour) || byhour.includes(this.hour)) &&
+        (empty(byminute) || byminute.includes(this.minute))
       ) {
         break
       }
@@ -211,9 +211,9 @@ export class DateTime extends Time {
       }
 
       if (
-        (empty(byhour) || includes(byhour, this.hour)) &&
-        (empty(byminute) || includes(byminute, this.minute)) &&
-        (empty(bysecond) || includes(bysecond, this.second))
+        (empty(byhour) || byhour.includes(this.hour)) &&
+        (empty(byminute) || byminute.includes(this.minute)) &&
+        (empty(bysecond) || bysecond.includes(this.second))
       ) {
         break
       }
@@ -236,7 +236,7 @@ export class DateTime extends Time {
       if (this.month === 13) {
         this.month = 1
         ++this.year
-        if (this.year > MAXYEAR) {
+        if (this.year > MAX_YEAR) {
           return
         }
       }

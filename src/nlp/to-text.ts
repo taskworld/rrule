@@ -1,8 +1,8 @@
-import ENGLISH, { Language } from './i18n'
+import { isDefined, isNumber } from '../helpers'
 import { RRule } from '../rrule'
-import { Options, ByWeekday } from '../types'
+import { ByWeekday, Options } from '../types'
 import { Weekday } from '../weekday'
-import { isArray, isNumber, isPresent } from '../helpers'
+import ENGLISH, { Language } from './i18n'
 
 // =============================================================================
 // Helper functions
@@ -81,8 +81,8 @@ export default class ToText {
       if (!this.bymonthday.length) this.bymonthday = null
     }
 
-    if (isPresent(this.origOptions.byweekday)) {
-      const byweekday = !isArray(this.origOptions.byweekday)
+    if (isDefined(this.origOptions.byweekday)) {
+      const byweekday = !Array.isArray(this.origOptions.byweekday)
         ? [this.origOptions.byweekday]
         : this.origOptions.byweekday
       const days = String(byweekday)
@@ -466,7 +466,7 @@ export default class ToText {
     finalDelim?: string,
     delim = ',',
   ) {
-    if (!isArray(arr)) {
+    if (!Array.isArray(arr)) {
       arr = [arr]
     }
     const delimJoin = function (

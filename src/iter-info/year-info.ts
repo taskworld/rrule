@@ -1,19 +1,19 @@
-import { ParsedOptions } from '../types'
-import { datetime, getWeekday, isLeapYear, toOrdinal } from '../dateutil'
-import { empty, repeat, pymod, includes } from '../helpers'
+import { datetime, getWeekday, isLeapYear, toOrdinal } from '../date-util'
+import { empty, pymod, repeat } from '../helpers'
 import {
   M365MASK,
-  MDAY365MASK,
-  NMDAY365MASK,
-  WDAYMASK,
   M365RANGE,
   M366MASK,
-  MDAY366MASK,
-  NMDAY366MASK,
   M366RANGE,
+  MDAY365MASK,
+  MDAY366MASK,
+  NMDAY365MASK,
+  NMDAY366MASK,
+  WDAYMASK,
 } from '../masks'
+import { ParsedOptions } from '../types'
 
-export interface YearInfo {
+export type YearInfo = {
   yearlen: 365 | 366
   nextyearlen: 365 | 366
   yearordinal: number
@@ -93,7 +93,7 @@ export function rebuildYear(year: number, options: ParsedOptions) {
     }
   }
 
-  if (includes(options.byweekno, 1)) {
+  if (options.byweekno.includes(1)) {
     // Check week number 1 of next year as well
     // orig-TODO : Check -numweeks for next year.
     let i = no1wkst + numweeks * 7
@@ -117,7 +117,7 @@ export function rebuildYear(year: number, options: ParsedOptions) {
     // days from last year's last week number in
     // this year.
     let lnumweeks: number
-    if (!includes(options.byweekno, -1)) {
+    if (!options.byweekno.includes(-1)) {
       const lyearweekday = getWeekday(datetime(year - 1, 1, 1))
 
       let lno1wkst = pymod(7 - lyearweekday.valueOf() + options.wkst, 7)
@@ -136,7 +136,7 @@ export function rebuildYear(year: number, options: ParsedOptions) {
       lnumweeks = -1
     }
 
-    if (includes(options.byweekno, lnumweeks)) {
+    if (options.byweekno.includes(lnumweeks)) {
       for (let i = 0; i < no1wkst; i++) result.wnomask[i] = 1
     }
   }

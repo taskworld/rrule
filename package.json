@@ -1,6 +1,6 @@
 {
   "name": "@taskworld/rrule",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "JavaScript library for working with recurrence rules for calendar dates.",
   "repository": "git://github.com/taskworld/rrule.git",
   "author": "Jakub Roztocil, Lars Schöning, David Golightly, and Taskworld",
@@ -23,7 +23,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
-    "test": "nyc jest **/*.test.ts"
+    "test": "jest **/*.test.ts"
   },
   "dependencies": {
     "luxon": "^3.7.2"

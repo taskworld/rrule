@@ -1,11 +1,10 @@
+import { untilStringToDate } from './date-util'
+import { parseDtstart, parseString } from './parse-string'
 import { RRule } from './rrule'
 import { RRuleSet } from './rruleset'
-import { untilStringToDate } from './dateutil'
-import { includes, split } from './helpers'
 import { Options } from './types'
-import { parseString, parseDtstart } from './parsestring'
 
-export interface RRuleStrOptions {
+export type RRuleStrOptions = {
   dtstart: Date | null
   cache: boolean
   unfold: boolean
@@ -27,13 +26,15 @@ const DEFAULT_OPTIONS: RRuleStrOptions = {
   tzid: null,
 }
 
-export function parseInput(s: string, options: Partial<RRuleStrOptions>) {
+export function parseInput(s: string, options: Partial<RRuleStrOptions> = {}) {
   const rrulevals: Partial<Options>[] = []
   let rdatevals: Date[] = []
+
   const exrulevals: Partial<Options>[] = []
   let exdatevals: Date[] = []
 
   const parsedDtstart = parseDtstart(s)
+
   const { dtstart } = parsedDtstart
   let { tzid } = parsedDtstart
 
@@ -171,7 +172,7 @@ function initializeOptions(options: Partial<RRuleStrOptions>) {
   ) as (keyof typeof DEFAULT_OPTIONS)[]
 
   keys.forEach(function (key) {
-    if (!includes(defaultKeys, key)) invalid.push(key)
+    if (!defaultKeys.includes(key)) invalid.push(key)
   })
 
   if (invalid.length) {
@@ -189,7 +190,8 @@ function extractName(line: string) {
     }
   }
 
-  const [name, value] = split(line, ':', 1)
+  const [name, value] = line.split(':', 2)
+
   return {
     name,
     value,

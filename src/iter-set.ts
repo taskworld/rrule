@@ -1,9 +1,9 @@
-import IterResult from './iterresult'
-import { RRule } from './rrule'
-import { DateWithZone } from './datewithzone'
+import { sort } from './date-util'
+import { DateWithZone } from './date-with-zone'
 import { iter } from './iter'
-import { sort } from './dateutil'
-import { QueryMethodTypes, IterResultType } from './types'
+import IterResult from './iter-result'
+import { RRule } from './rrule'
+import { IterResultType, QueryMethodTypes } from './types'
 
 export function iterSet<M extends QueryMethodTypes>(
   iterResult: IterResult<M>,
@@ -59,8 +59,8 @@ export function iterSet<M extends QueryMethodTypes>(
     if (!iterResult.accept(new Date(zonedDate.getTime()))) break
   }
 
-  _rrule.forEach(function (rrule) {
-    iter(iterResult, rrule.options, rrule.origOptions, _exdateHash, evalExdate)
+  _rrule.forEach((rrule) => {
+    iter(iterResult, rrule.options)
   })
 
   const res = iterResult._result

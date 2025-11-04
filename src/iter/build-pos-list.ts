@@ -1,9 +1,9 @@
-import { combine, fromOrdinal, sort } from '../dateutil'
-import Iterinfo from '../iterinfo/index'
-import { pymod, isPresent, includes } from '../helpers'
+import { combine, fromOrdinal, sort } from '../date-util'
 import { Time } from '../datetime'
+import { isDefined, pymod } from '../helpers'
+import Iterinfo from '../iter-info/index'
 
-export function buildPoslist(
+export function buildPosList(
   bysetpos: number[],
   timeset: Time[],
   start: number,
@@ -29,7 +29,7 @@ export function buildPoslist(
     const tmp = []
     for (let k = start; k < end; k++) {
       const val = dayset[k]
-      if (!isPresent(val)) continue
+      if (!isDefined(val)) continue
       tmp.push(val)
     }
     let i: number
@@ -44,7 +44,7 @@ export function buildPoslist(
     const res = combine(date, time)
     // XXX: can this ever be in the array?
     // - compare the actual date instead?
-    if (!includes(poslist, res)) poslist.push(res)
+    if (!poslist.includes(res)) poslist.push(res)
   }
 
   sort(poslist)

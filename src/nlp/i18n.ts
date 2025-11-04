@@ -2,7 +2,7 @@
 // i18n
 // =============================================================================
 
-export interface Language {
+export type Language = {
   dayNames: string[]
   monthNames: string[]
   tokens: {

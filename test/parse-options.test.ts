@@ -1,5 +1,5 @@
-import { parseOptions } from '../src/parseoptions'
-import { RRule } from '../src'
+import { parseOptions } from '../src/parse-options'
+import { RRule } from '../src/rrule'
 
 describe('TZID', () => {
   it('leaves null when null', () => {

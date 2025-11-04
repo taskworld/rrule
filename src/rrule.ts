@@ -1,24 +1,24 @@
-import { isValidDate } from './dateutil'
+import { isValidDate } from './date-util'
 
-import IterResult, { IterArgs } from './iterresult'
-import CallbackIterResult from './callbackiterresult'
+import { Cache, CacheKeys } from './cache'
+import CallbackIterResult from './callback-iter-result'
+import IterResult, { IterArgs } from './iter-result'
+import { iter } from './iter/index'
 import { Language } from './nlp/i18n'
-import { fromText, parseText, toText, isFullyConvertible } from './nlp/index'
-import { DateFormatter, GetText } from './nlp/totext'
+import { fromText, isFullyConvertible, parseText, toText } from './nlp/index'
+import { DateFormatter, GetText } from './nlp/to-text'
+import { optionsToString } from './options-to-string'
+import { initializeOptions, parseOptions } from './parse-options'
+import { parseString } from './parse-string'
 import {
-  ParsedOptions,
-  Options,
   Frequency,
+  IterResultType,
+  Options,
+  ParsedOptions,
   QueryMethods,
   QueryMethodTypes,
-  IterResultType,
 } from './types'
-import { parseOptions, initializeOptions } from './parseoptions'
-import { parseString } from './parsestring'
-import { optionsToString } from './optionstostring'
-import { Cache, CacheKeys } from './cache'
 import { Weekday } from './weekday'
-import { iter } from './iter/index'
 
 // =============================================================================
 // RRule
@@ -72,7 +72,7 @@ export class RRule implements QueryMethods {
 
   // RRule class 'constants'
 
-  static readonly FREQUENCIES: (keyof typeof Frequency)[] = [
+  static FREQUENCIES: (keyof typeof Frequency)[] = [
     'YEARLY',
     'MONTHLY',
     'WEEKLY',
@@ -82,21 +82,21 @@ export class RRule implements QueryMethods {
     'SECONDLY',
   ]
 
-  static readonly YEARLY = Frequency.YEARLY
-  static readonly MONTHLY = Frequency.MONTHLY
-  static readonly WEEKLY = Frequency.WEEKLY
-  static readonly DAILY = Frequency.DAILY
-  static readonly HOURLY = Frequency.HOURLY
-  static readonly MINUTELY = Frequency.MINUTELY
-  static readonly SECONDLY = Frequency.SECONDLY
+  static YEARLY = Frequency.YEARLY
+  static MONTHLY = Frequency.MONTHLY
+  static WEEKLY = Frequency.WEEKLY
+  static DAILY = Frequency.DAILY
+  static HOURLY = Frequency.HOURLY
+  static MINUTELY = Frequency.MINUTELY
+  static SECONDLY = Frequency.SECONDLY
 
-  static readonly MO = Days.MO
-  static readonly TU = Days.TU
-  static readonly WE = Days.WE
-  static readonly TH = Days.TH
-  static readonly FR = Days.FR
-  static readonly SA = Days.SA
-  static readonly SU = Days.SU
+  static MO = Days.MO
+  static TU = Days.TU
+  static WE = Days.WE
+  static TH = Days.TH
+  static FR = Days.FR
+  static SA = Days.SA
+  static SU = Days.SU
 
   constructor(options: Partial<Options> = {}, noCache = false) {
     // RFC string
@@ -127,7 +127,7 @@ export class RRule implements QueryMethods {
   protected _iter<M extends QueryMethodTypes>(
     iterResult: IterResult<M>,
   ): IterResultType<M> {
-    return iter(iterResult, this.options, this.origOptions)
+    return iter(iterResult, this.options)
   }
 
   private _cacheGet(what: CacheKeys | 'all', args?: Partial<IterArgs>) {
@@ -268,12 +268,16 @@ export class RRule implements QueryMethods {
    * Will convert all rules described in nlp:ToText
    * to text.
    */
-  toText(
-    gettext?: GetText,
-    language?: Language,
-    dateFormatter?: DateFormatter,
-  ) {
-    return toText(this, gettext, language, dateFormatter)
+  toText({
+    getText,
+    language,
+    dateFormatter,
+  }: {
+    getText?: GetText
+    language?: Language
+    dateFormatter?: DateFormatter
+  } = {}) {
+    return toText(this, getText, language, dateFormatter)
   }
 
   isFullyConvertibleToText() {
