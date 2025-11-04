@@ -1,11 +1,11 @@
-import { RRule } from './rrule'
 import { sort, timeToUntilString } from './dateutil'
 import { includes } from './helpers'
 import IterResult from './iterresult'
 import { iterSet } from './iterset'
-import { QueryMethodTypes, IterResultType } from './types'
-import { rrulestr } from './rrulestr'
 import { optionsToString } from './optionstostring'
+import { RRule } from './rrule'
+import { rrulestr } from './rrulestr'
+import { IterResultType, QueryMethodTypes } from './types'
 
 function createGetterSetter<T>(fieldName: string) {
   return (field?: T) => {
@@ -54,7 +54,7 @@ export class RRuleSet extends RRule {
   tzid = createGetterSetter.apply(this, ['tzid'])
 
   _iter<M extends QueryMethodTypes>(
-    iterResult: IterResult<M>
+    iterResult: IterResult<M>,
   ): IterResultType<M> {
     return iterSet(
       iterResult,
@@ -62,7 +62,7 @@ export class RRuleSet extends RRule {
       this._exrule,
       this._rdate,
       this._exdate,
-      this.tzid()
+      this.tzid(),
     )
   }
 
@@ -156,7 +156,7 @@ export class RRuleSet extends RRule {
           .toString()
           .split('\n')
           .map((line) => line.replace(/^RRULE:/, 'EXRULE:'))
-          .filter((line) => !/^DTSTART/.test(line))
+          .filter((line) => !line.startsWith('DTSTART')),
       )
     })
 
@@ -219,7 +219,7 @@ function _addDate(date: Date, collection: Date[]) {
 function rdatesToString(
   param: string,
   rdates: Date[],
-  tzid: string | undefined
+  tzid: string | undefined,
 ) {
   const isUTC = !tzid || tzid.toUpperCase() === 'UTC'
   const header = isUTC ? `${param}:` : `${param};TZID=${tzid}:`

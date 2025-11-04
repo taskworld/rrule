@@ -1,6 +1,6 @@
 export { datetime } from '../../src/dateutil'
-import { dateInTimeZone, datetime } from '../../src/dateutil'
 import { RRule, RRuleSet } from '../../src'
+import { dateInTimeZone, datetime } from '../../src/dateutil'
 
 export const TEST_CTX = {
   ALSO_TESTSTRING_FUNCTIONS: false,
@@ -9,9 +9,13 @@ export const TEST_CTX = {
   ALSO_TESTSUBSECOND_PRECISION: false,
 }
 
+export function isNumber(maybeNumber: any): maybeNumber is number {
+  return typeof maybeNumber === 'number' && isFinite(maybeNumber)
+}
+
 const assertDatesEqual = function (
   actual: Date | Date[],
-  expected: Date | Date[]
+  expected: Date | Date[],
 ) {
   if (!(actual instanceof Array)) actual = [actual]
   if (!(expected instanceof Array)) expected = [expected]
@@ -62,7 +66,7 @@ export const testRecurring = function (
   msg: string,
   testObj: TestObj | RRule | (() => TestObj),
   expectedDates: Date | Date[],
-  itFunc: jest.Func = it
+  itFunc: jest.Func = it,
 ) {
   let rule: RRule
   let method: 'all' | 'before' | 'between' | 'after'
@@ -118,7 +122,7 @@ export const testRecurring = function (
 
     if (TEST_CTX.ALSO_TESTSUBSECOND_PRECISION) {
       expect(actualDates.map(extractTime)).toEqual(
-        expectedDates.map(extractTime)
+        expectedDates.map(extractTime),
       )
     }
 
@@ -165,18 +169,18 @@ export const testRecurring = function (
           rule.between(
             expectedDates[0],
             expectedDates[expectedDates.length - 1],
-            true
+            true,
           ),
-          expectedDates
+          expectedDates,
         )
 
         assertDatesEqual(
           rule.between(
             expectedDates[0],
             expectedDates[expectedDates.length - 1],
-            false
+            false,
           ),
-          expectedDates.slice(1, expectedDates.length - 1)
+          expectedDates.slice(1, expectedDates.length - 1),
         )
       }
 
@@ -194,8 +198,13 @@ export const testRecurring = function (
           assertDatesEqual(rule.before(date, true), date)
 
           // Test after() and before() with inc=false.
-          next && assertDatesEqual(rule.after(date, false), next)
-          prev && assertDatesEqual(rule.before(date, false), prev)
+          if (next) {
+            assertDatesEqual(rule.after(date, false), next!)
+          }
+
+          if (prev) {
+            assertDatesEqual(rule.before(date, false), prev!)
+          }
         }
       }
     }
@@ -214,7 +223,7 @@ testRecurring.skip = function ([description]: [string]) {
 export function expectedDate(
   startDate: Date,
   currentLocalDate: Date,
-  targetZone: string
+  targetZone: string,
 ): Date {
   return dateInTimeZone(startDate, targetZone)
 }
