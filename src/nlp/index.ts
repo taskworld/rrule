@@ -131,7 +131,7 @@ const toText = function (
 
 const { isFullyConvertible } = ToText
 
-export interface Nlp {
+export type Nlp = {
   fromText: typeof fromText
   parseText: typeof parseText
   isFullyConvertible: typeof isFullyConvertible

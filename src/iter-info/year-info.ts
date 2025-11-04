@@ -1,5 +1,5 @@
 import { datetime, getWeekday, isLeapYear, toOrdinal } from '../date-util'
-import { empty, includes, pymod, repeat } from '../helpers'
+import { empty, pymod, repeat } from '../helpers'
 import {
   M365MASK,
   M365RANGE,
@@ -93,7 +93,7 @@ export function rebuildYear(year: number, options: ParsedOptions) {
     }
   }
 
-  if (includes(options.byweekno, 1)) {
+  if (options.byweekno.includes(1)) {
     // Check week number 1 of next year as well
     // orig-TODO : Check -numweeks for next year.
     let i = no1wkst + numweeks * 7
@@ -117,7 +117,7 @@ export function rebuildYear(year: number, options: ParsedOptions) {
     // days from last year's last week number in
     // this year.
     let lnumweeks: number
-    if (!includes(options.byweekno, -1)) {
+    if (!options.byweekno.includes(-1)) {
       const lyearweekday = getWeekday(datetime(year - 1, 1, 1))
 
       let lno1wkst = pymod(7 - lyearweekday.valueOf() + options.wkst, 7)
@@ -136,7 +136,7 @@ export function rebuildYear(year: number, options: ParsedOptions) {
       lnumweeks = -1
     }
 
-    if (includes(options.byweekno, lnumweeks)) {
+    if (options.byweekno.includes(lnumweeks)) {
       for (let i = 0; i < no1wkst; i++) result.wnomask[i] = 1
     }
   }

@@ -1,11 +1,10 @@
 import { untilStringToDate } from './date-util'
-import { includes, split } from './helpers'
 import { parseDtstart, parseString } from './parse-string'
 import { RRule } from './rrule'
 import { RRuleSet } from './rruleset'
 import { Options } from './types'
 
-export interface RRuleStrOptions {
+export type RRuleStrOptions = {
   dtstart: Date | null
   cache: boolean
   unfold: boolean
@@ -173,7 +172,7 @@ function initializeOptions(options: Partial<RRuleStrOptions>) {
   ) as (keyof typeof DEFAULT_OPTIONS)[]
 
   keys.forEach(function (key) {
-    if (!includes(defaultKeys, key)) invalid.push(key)
+    if (!defaultKeys.includes(key)) invalid.push(key)
   })
 
   if (invalid.length) {
@@ -191,7 +190,8 @@ function extractName(line: string) {
     }
   }
 
-  const [name, value] = split(line, ':', 1)
+  const [name, value] = line.split(':', 2)
+
   return {
     name,
     value,

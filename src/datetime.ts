@@ -1,5 +1,5 @@
 import { getWeekday, MAXYEAR, monthRange } from './date-util'
-import { divmod, empty, includes, pymod } from './helpers'
+import { divmod, empty, pymod } from './helpers'
 import { Frequency, ParsedOptions } from './types'
 
 export class Time {
@@ -153,7 +153,7 @@ export class DateTime extends Time {
         this.addDaily(dayDiv)
       }
 
-      if (empty(byhour) || includes(byhour, this.hour)) break
+      if (empty(byhour) || byhour.includes(this.hour)) break
     }
   }
 
@@ -178,8 +178,8 @@ export class DateTime extends Time {
       }
 
       if (
-        (empty(byhour) || includes(byhour, this.hour)) &&
-        (empty(byminute) || includes(byminute, this.minute))
+        (empty(byhour) || byhour.includes(this.hour)) &&
+        (empty(byminute) || byminute.includes(this.minute))
       ) {
         break
       }
@@ -211,9 +211,9 @@ export class DateTime extends Time {
       }
 
       if (
-        (empty(byhour) || includes(byhour, this.hour)) &&
-        (empty(byminute) || includes(byminute, this.minute)) &&
-        (empty(bysecond) || includes(bysecond, this.second))
+        (empty(byhour) || byhour.includes(this.hour)) &&
+        (empty(byminute) || byminute.includes(this.minute)) &&
+        (empty(bysecond) || bysecond.includes(this.second))
       ) {
         break
       }

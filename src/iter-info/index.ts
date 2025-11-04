@@ -1,6 +1,6 @@
 import { datetime, sort, toOrdinal } from '../date-util'
 import { Time } from '../datetime'
-import { isPresent, notEmpty, range, repeat } from '../helpers'
+import { empty, isDefined, range, repeat } from '../helpers'
 import { Frequency, ParsedOptions } from '../types'
 import { easter } from './easter'
 import { MonthInfo, rebuildMonth } from './month-info'
@@ -29,7 +29,7 @@ export default class Iterinfo {
     }
 
     if (
-      notEmpty(options.bynweekday) &&
+      !empty(options.bynweekday) &&
       (month !== this.lastmonth || year !== this.lastyear)
     ) {
       const { yearlen, mrange, wdaymask } = this.yearinfo
@@ -43,7 +43,7 @@ export default class Iterinfo {
       )
     }
 
-    if (isPresent(options.byeaster)) {
+    if (isDefined(options.byeaster)) {
       this.eastermask = easter(year, options.byeaster)
     }
   }

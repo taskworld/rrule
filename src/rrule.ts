@@ -268,12 +268,16 @@ export class RRule implements QueryMethods {
    * Will convert all rules described in nlp:ToText
    * to text.
    */
-  toText(
-    gettext?: GetText,
-    language?: Language,
-    dateFormatter?: DateFormatter,
-  ) {
-    return toText(this, gettext, language, dateFormatter)
+  toText({
+    getText,
+    language,
+    dateFormatter,
+  }: {
+    getText?: GetText
+    language?: Language
+    dateFormatter?: DateFormatter
+  } = {}) {
+    return toText(this, getText, language, dateFormatter)
   }
 
   isFullyConvertibleToText() {

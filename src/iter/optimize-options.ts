@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 
-import { notEmpty } from '../helpers'
+import { empty } from '../helpers'
 import IterResult from '../iter-result'
 import { Frequency, Options, ParsedOptions, QueryMethodTypes } from '../types'
 import { Weekday } from '../weekday'
@@ -97,20 +97,18 @@ export function optimizeOptions<M extends QueryMethodTypes>(
     (!minDate && !maxDate) ||
     (minDate && minDate <= dtstart) ||
     (maxDate && maxDate <= dtstart) ||
-    notEmpty(bymonth) ||
-    notEmpty(bysetpos) ||
-    notEmpty(bymonthday) ||
-    notEmpty(byyearday) ||
-    notEmpty(byweekno) ||
-    notEmpty(byhour) ||
-    notEmpty(byminute) ||
-    notEmpty(bysecond) ||
-    notEmpty(bysecond) ||
-    notEmpty(byeaster) ||
-    (notEmpty(byweekday) &&
-      (Array.isArray(byweekday) ? byweekday : [byweekday]).some(
-        (byweekdayInstance) => byweekdayInstance instanceof Weekday,
-      ))
+    !empty(bymonth) ||
+    !empty(bysetpos) ||
+    !empty(bymonthday) ||
+    !empty(byyearday) ||
+    !empty(byweekno) ||
+    !empty(byhour) ||
+    !empty(byminute) ||
+    !empty(bysecond) ||
+    !empty(bysecond) ||
+    !empty(byeaster) ||
+    (!empty(byweekday) &&
+      [].concat(byweekday).some((w) => w instanceof Weekday))
   ) {
     return parsedOptions
   }

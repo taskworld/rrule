@@ -34,7 +34,7 @@ export function freqIsDailyOrGreater(
   return freq < Frequency.HOURLY
 }
 
-export interface Options {
+export type Options = {
   freq: Frequency
   dtstart?: Date
   interval: number

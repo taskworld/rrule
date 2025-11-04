@@ -1,5 +1,4 @@
 import { clone, cloneDates } from './date-util'
-import { isArray } from './helpers'
 import IterResult, { IterArgs } from './iter-result'
 
 export type CacheKeys = 'before' | 'after' | 'between'
@@ -75,7 +74,7 @@ export class Cache {
     const cachedObject = this[what]
     if (what === 'all') {
       cached = this.all as Date[]
-    } else if (isArray(cachedObject)) {
+    } else if (Array.isArray(cachedObject)) {
       // Let's see whether we've already called the
       // 'what' method with the same 'args'
       for (let i = 0; i < cachedObject.length; i++) {
@@ -97,7 +96,7 @@ export class Cache {
       this._cacheAdd(what, cached, args)
     }
 
-    return isArray(cached)
+    return Array.isArray(cached)
       ? cloneDates(cached)
       : cached instanceof Date
         ? clone(cached)

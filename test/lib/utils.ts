@@ -38,7 +38,7 @@ const extractTime = function (date: Date) {
 /**
  * dateutil.parser.parse
  */
-export const parse = function (str: string) {
+export function parse(str: string) {
   const parts = str.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/)
   const [, y, m, d, h, i, s] = parts
   const year = Number(y)
@@ -50,13 +50,13 @@ export const parse = function (str: string) {
   return datetime(year, month, day, hour, minute, second)
 }
 
-interface TestRecurring {
+type TestRecurring = {
   (m: string, testObj: unknown, expectedDates: Date | Date[]): void
   only: (...args: unknown[]) => void
   skip: (...args: unknown[]) => void
 }
 
-interface TestObj {
+type TestObj = {
   rrule: RRule
   method: 'all' | 'between' | 'before' | 'after'
   args: unknown[]

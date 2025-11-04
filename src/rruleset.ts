@@ -1,5 +1,4 @@
 import { sort, timeToUntilString } from './date-util'
-import { includes } from './helpers'
 import IterResult from './iter-result'
 import { iterSet } from './iter-set'
 import { optionsToString } from './options-to-string'
@@ -201,7 +200,7 @@ function _addRule(rrule: RRule, collection: RRule[]) {
     throw new TypeError(String(rrule) + ' is not RRule instance')
   }
 
-  if (!includes(collection.map(String), String(rrule))) {
+  if (!collection.map(String).includes(String(rrule))) {
     collection.push(rrule)
   }
 }
@@ -210,7 +209,7 @@ function _addDate(date: Date, collection: Date[]) {
   if (!(date instanceof Date)) {
     throw new TypeError(String(date) + ' is not Date instance')
   }
-  if (!includes(collection.map(Number), Number(date))) {
+  if (!collection.map(Number).includes(Number(date))) {
     collection.push(date)
     sort(collection)
   }

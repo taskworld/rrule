@@ -23,7 +23,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
-    "test": "nyc jest **/*.test.ts"
+    "test": "nyc jest **/*.test.ts --runInBand"
   },
   "dependencies": {
     "luxon": "^3.7.2"

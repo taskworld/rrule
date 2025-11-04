@@ -4,7 +4,7 @@ import { IterResultType, QueryMethodTypes } from './types'
 // Results
 // =============================================================================
 
-export interface IterArgs {
+export type IterArgs = {
   inc: boolean
   before: Date
   after: Date

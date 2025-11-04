@@ -6,6 +6,10 @@ export const ALL_WEEKDAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'] as const
 
 export type WeekdayStr = (typeof ALL_WEEKDAYS)[number]
 
+export function isWeekdayStr(value: unknown): value is WeekdayStr {
+  return typeof value === 'string' && ALL_WEEKDAYS.includes(value as WeekdayStr)
+}
+
 export class Weekday {
   public weekday: number
   public n?: number
