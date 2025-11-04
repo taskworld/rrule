@@ -6,13 +6,12 @@ import { Options, ParsedOptions, freqIsDailyOrGreater } from './types'
 import { Weekday, isWeekdayStr } from './weekday'
 
 export function initializeOptions(options: Partial<Options>) {
-  const invalid = Object.entries(options)
-    .flatMap(([key, value]) =>
-      !(defaultKeys as string[]).includes(key)
-        || (value instanceof Date && !isValidDate(value))
-        ? [key]
-        : []
-    )
+  const invalid = Object.entries(options).flatMap(([key, value]) =>
+    !(defaultKeys as string[]).includes(key) ||
+    (value instanceof Date && !isValidDate(value))
+      ? [key]
+      : [],
+  )
 
   if (invalid.length) {
     throw new Error('Invalid options: ' + invalid.join(', '))
@@ -49,9 +48,11 @@ export function parseOptions(options: Partial<Options>) {
       opts.bysetpos = [opts.bysetpos]
     }
 
-    opts.bysetpos.forEach(v => {
+    opts.bysetpos.forEach((v) => {
       if (v === 0 || Math.abs(v) >= 366) {
-        throw new Error('bysetpos must be between 1 and 366,' + ' or between -366 and -1')
+        throw new Error(
+          'bysetpos must be between 1 and 366,' + ' or between -366 and -1',
+        )
       }
     })
   }

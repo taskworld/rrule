@@ -1,27 +1,70 @@
+import { differenceInDays } from 'date-fns'
 import { Time } from './datetime'
 
 type Datelike = Pick<Date, 'getTime'>
 
-export function datetime(y: number, m: number, d: number, h = 0, i = 0, s = 0) {
-  return new Date(Date.UTC(y, m - 1, d, h, i, s))
+export function datetime(
+  y: number,
+  m: number,
+  d: number,
+  h = 0,
+  i = 0,
+  s = 0,
+  ms = 0,
+) {
+  return new Date(Date.UTC(y, m - 1, d, h, i, s, ms))
 }
 
-/**
- * General date-related utilities.
- * Also handles several incompatibilities between JavaScript and Python
- *
- */
-export const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+export function sort<T extends Datelike>(dates: T[]) {
+  dates.sort((a, b) => a.getTime() - b.getTime())
+}
 
-/**
- * Number of milliseconds of one day
- */
-export const ONE_DAY = 1000 * 60 * 60 * 24
+export function isValidDate(value: unknown): value is Date {
+  return value instanceof Date && !isNaN(value.getTime())
+}
 
-/**
- * @see: <http://docs.python.org/library/datetime.html#datetime.MAXYEAR>
- */
-export const MAXYEAR = 9999
+export function clone(date: Date | Time) {
+  return new Date(date.getTime())
+}
+
+// ---
+
+export const MAX_YEAR = 9999
+
+export function isLeapYear(year: number) {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
+}
+
+// ---
+
+const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+// faster than date-fns
+export function getDaysInMonth(date: Date) {
+  const month = date.getUTCMonth()
+  return month === 1 && isLeapYear(date.getUTCFullYear())
+    ? 29
+    : MONTH_DAYS[month]
+}
+
+// http://docs.python.org/library/calendar.html#calendar.monthrange
+export function monthRange(year: number, month: number) {
+  const date = new Date(Date.UTC(year, month, 1))
+  return [getWeekday(date), getDaysInMonth(date)]
+}
+
+// ---
+
+const ONE_DAY = 1000 * 60 * 60 * 24
+
+// Python: MO-SU: 0 - 6 vs JS: SU-SAT 0 - 6
+const PY_WEEKDAYS = [6, 0, 1, 2, 3, 4, 5]
+
+export function getWeekday(date: Date) {
+  return PY_WEEKDAYS[date.getUTCDay()]
+}
+
+// ---
 
 /**
  * Python uses 1-Jan-1 as the base for calculating ordinals but we don't
@@ -30,77 +73,17 @@ export const MAXYEAR = 9999
  */
 export const ORDINAL_BASE = datetime(1970, 1, 1)
 
-/**
- * Python: MO-SU: 0 - 6
- * JS: SU-SAT 0 - 6
- */
-export const PY_WEEKDAYS = [6, 0, 1, 2, 3, 4, 5]
-
-export function isLeapYear(year: number) {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-}
-
-export function isValidDate(value: unknown): value is Date {
-  return value instanceof Date && !isNaN(value.getTime())
-}
-
-/**
- * @see: <http://www.mcfedries.com/JavaScript/DaysBetween.asp>
- */
-export function daysBetween(date1: Date, date2: Date) {
-  // The number of milliseconds in one day
-  // Convert both dates to milliseconds
-  const date1ms = date1.getTime()
-  const date2ms = date2.getTime()
-
-  // Calculate the difference in milliseconds
-  const differencems = date1ms - date2ms
-
-  // Convert back to days and return
-  return Math.round(differencems / ONE_DAY)
-}
-
-/**
- * @see: <http://docs.python.org/library/datetime.html#datetime.date.toordinal>
- */
-export function toOrdinal(date: Date) {
-  return daysBetween(date, ORDINAL_BASE)
-}
-
-/**
- * @see - <http://docs.python.org/library/datetime.html#datetime.date.fromordinal>
- */
 export function fromOrdinal(ordinal: number) {
   return new Date(ORDINAL_BASE.getTime() + ordinal * ONE_DAY)
 }
 
-export function getMonthDays(date: Date) {
-  const month = date.getUTCMonth()
-  return month === 1 && isLeapYear(date.getUTCFullYear())
-    ? 29
-    : MONTH_DAYS[month]
+export function toOrdinal(date: Date) {
+  return differenceInDays(date, ORDINAL_BASE)
 }
 
-/**
- * @return {Number} python-like weekday
- */
-export function getWeekday(date: Date) {
-  return PY_WEEKDAYS[date.getUTCDay()]
-}
+// ---
 
-/**
- * @see: <http://docs.python.org/library/calendar.html#calendar.monthrange>
- */
-export function monthRange(year: number, month: number) {
-  const date = datetime(year, month + 1, 1)
-  return [getWeekday(date), getMonthDays(date)]
-}
-
-/**
- * @see: <http://docs.python.org/library/datetime.html#datetime.datetime.combine>
- */
-export function combine(date: Date, time: Date | Time) {
-  time = time || date
+export function combine(date: Date, time: Date | Time = date) {
   return new Date(
     Date.UTC(
       date.getUTCFullYear(),
@@ -114,28 +97,9 @@ export function combine(date: Date, time: Date | Time) {
   )
 }
 
-export function clone(date: Date | Time) {
-  return new Date(date.getTime())
-}
+// ---
 
-export function cloneDates(dates: Date[] | Time[]) {
-  const clones = []
-  for (let i = 0; i < dates.length; i++) {
-    clones.push(clone(dates[i]))
-  }
-  return clones
-}
-
-/**
- * Sorts an array of Date or Time objects
- */
-export function sort<T extends Datelike>(dates: T[]) {
-  dates.sort(function (a, b) {
-    return a.getTime() - b.getTime()
-  })
-}
-
-export function timeToUntilString(time: number, utc = true) {
+export function untilTimeToString(time: number, utc = true) {
   const date = new Date(time)
   return [
     `${date.getUTCFullYear()}`.padStart(4, '0'),
@@ -167,19 +131,20 @@ export function untilStringToDate(until: string) {
   )
 }
 
-const dateTZtoISO8601 = function (date: Date, timeZone: string) {
-  // date format for sv-SE is almost ISO8601
-  const dateStr = date.toLocaleString('sv-SE', { timeZone })
-  // '2023-02-07 10:41:36'
-  return dateStr.replace(' ', 'T') + 'Z'
+// ---
+
+// date format for sv-SE is almost ISO8601
+function dateTZtoISO8601(date: Date, timeZone: string) {
+  return `${date.toLocaleString('sv-SE', { timeZone }).replace(' ', 'T')}Z`
 }
 
 export function dateInTimeZone(date: Date, timeZone: string) {
   const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
   // Date constructor can only reliably parse dates in ISO8601 format
   const dateInLocalTZ = new Date(dateTZtoISO8601(date, localTimeZone))
   const dateInTargetTZ = new Date(dateTZtoISO8601(date, timeZone ?? 'UTC'))
-  const tzOffset = dateInTargetTZ.getTime() - dateInLocalTZ.getTime()
 
+  const tzOffset = dateInTargetTZ.getTime() - dateInLocalTZ.getTime()
   return new Date(date.getTime() - tzOffset)
 }

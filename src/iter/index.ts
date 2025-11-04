@@ -1,4 +1,4 @@
-import { combine, fromOrdinal, MAXYEAR } from '../date-util'
+import { combine, fromOrdinal, MAX_YEAR } from '../date-util'
 import { DateWithZone } from '../date-with-zone'
 import { DateTime, Time } from '../datetime'
 import { empty, isDefined } from '../helpers'
@@ -114,7 +114,7 @@ export function iter<M extends QueryMethodTypes>(
     // Handle frequency and interval
     counterDate.add(parsedOptions, filtered)
 
-    if (counterDate.year > MAXYEAR) {
+    if (counterDate.year > MAX_YEAR) {
       return emitResult(iterResult)
     }
 

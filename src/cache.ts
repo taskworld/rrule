@@ -1,4 +1,4 @@
-import { clone, cloneDates } from './date-util'
+import { clone } from './date-util'
 import IterResult, { IterArgs } from './iter-result'
 
 export type CacheKeys = 'before' | 'after' | 'between'
@@ -37,7 +37,7 @@ export class Cache {
     args?: Partial<IterArgs>,
   ) {
     if (value) {
-      value = value instanceof Date ? clone(value) : cloneDates(value)
+      value = value instanceof Date ? clone(value) : value.map(clone)
     }
 
     if (what === 'all') {
@@ -97,7 +97,7 @@ export class Cache {
     }
 
     return Array.isArray(cached)
-      ? cloneDates(cached)
+      ? cached.map(clone)
       : cached instanceof Date
         ? clone(cached)
         : cached

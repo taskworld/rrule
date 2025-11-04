@@ -1,4 +1,4 @@
-import { sort, timeToUntilString } from './date-util'
+import { sort, untilTimeToString } from './date-util'
 import IterResult from './iter-result'
 import { iterSet } from './iter-set'
 import { optionsToString } from './options-to-string'
@@ -224,7 +224,7 @@ function rdatesToString(
   const header = isUTC ? `${param}:` : `${param};TZID=${tzid}:`
 
   const dateString = rdates
-    .map((rdate) => timeToUntilString(rdate.valueOf(), isUTC))
+    .map((rdate) => untilTimeToString(rdate.valueOf(), isUTC))
     .join(',')
 
   return `${header}${dateString}`

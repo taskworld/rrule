@@ -1,4 +1,4 @@
-import { getWeekday, MAXYEAR, monthRange } from './date-util'
+import { getWeekday, MAX_YEAR, monthRange } from './date-util'
 import { divmod, empty, pymod } from './helpers'
 import { Frequency, ParsedOptions } from './types'
 
@@ -236,7 +236,7 @@ export class DateTime extends Time {
       if (this.month === 13) {
         this.month = 1
         ++this.year
-        if (this.year > MAXYEAR) {
+        if (this.year > MAX_YEAR) {
           return
         }
       }

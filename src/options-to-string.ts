@@ -1,4 +1,4 @@
-import { timeToUntilString } from './date-util'
+import { untilTimeToString } from './date-util'
 import { DateWithZone } from './date-with-zone'
 import { isDefined, isNumber, toArray } from './helpers'
 import { DEFAULT_OPTIONS, RRule } from './rrule'
@@ -67,7 +67,7 @@ export function optionsToString(options: Partial<Options>) {
         break
 
       case 'UNTIL':
-        outValue = timeToUntilString(value as number, !options.tzid)
+        outValue = untilTimeToString(value as number, !options.tzid)
         break
 
       default:
