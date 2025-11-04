@@ -6,30 +6,13 @@ import Iterinfo from '../iter-info/index'
 import IterResult from '../iter-result'
 import { buildTimeset } from '../parse-options'
 import { RRule } from '../rrule'
-import {
-  freqIsDailyOrGreater,
-  Options,
-  ParsedOptions,
-  QueryMethodTypes,
-} from '../types'
+import { freqIsDailyOrGreater, ParsedOptions, QueryMethodTypes } from '../types'
 import { buildPosList } from './build-pos-list'
-import { optimizeOptions } from './optimize-options'
 
 export function iter<M extends QueryMethodTypes>(
   iterResult: IterResult<M>,
   parsedOptions: ParsedOptions,
-  origOptions: Partial<Options>,
-  exdateHash?: { [k: number]: boolean },
-  evalExdate?: (after: Date, before: Date) => void,
 ) {
-  parsedOptions = optimizeOptions(
-    iterResult,
-    parsedOptions,
-    origOptions,
-    exdateHash,
-    evalExdate,
-  )
-
   const { freq, dtstart, interval, until, bysetpos } = parsedOptions
 
   let count = parsedOptions.count

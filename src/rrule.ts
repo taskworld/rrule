@@ -127,7 +127,7 @@ export class RRule implements QueryMethods {
   protected _iter<M extends QueryMethodTypes>(
     iterResult: IterResult<M>,
   ): IterResultType<M> {
-    return iter(iterResult, this.options, this.origOptions)
+    return iter(iterResult, this.options)
   }
 
   private _cacheGet(what: CacheKeys | 'all', args?: Partial<IterArgs>) {

@@ -59,8 +59,8 @@ export function iterSet<M extends QueryMethodTypes>(
     if (!iterResult.accept(new Date(zonedDate.getTime()))) break
   }
 
-  _rrule.forEach(function (rrule) {
-    iter(iterResult, rrule.options, rrule.origOptions, _exdateHash, evalExdate)
+  _rrule.forEach((rrule) => {
+    iter(iterResult, rrule.options)
   })
 
   const res = iterResult._result
