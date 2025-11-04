@@ -19,7 +19,7 @@
     "dist",
     "README.md"
   ],
-  "packageManager": "pnpm@10",
+  "packageManager": "pnpm@10.20.0",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
