@@ -1,50 +1,50 @@
-import { parse, datetime, testRecurring, TEST_CTX } from './lib/utils'
-import { RRule, RRuleSet, rrulestr, Frequency } from '../src'
-import { Days } from '../src/rrule'
-import { parseInput } from '../src/rrulestr'
+import { datetime } from '../src/date-util'
+import { Days, RRule } from '../src/rrule'
+import { RRuleSet } from '../src/rruleset'
+import { parseInput, rrulestr } from '../src/rrulestr'
+import { Frequency } from '../src/types'
+import { ALSO_TEST, parse, testRecurring } from './lib/utils'
 
 describe('rrulestr', function () {
   beforeAll(() => {
     // Enable additional toString() / fromString() tests
     // for each testRecurring().
-    TEST_CTX.ALSO_TESTSTRING_FUNCTIONS = false
+    ALSO_TEST.STRING_FUNCTIONS = false
 
     // Enable additional toText() / fromText() tests
     // for each testRecurring().
     // Many of the tests fail because the conversion is only approximate,
     // but it gives an idea about how well or bad it converts.
-    TEST_CTX.ALSO_TESTNLP_FUNCTIONS = false
+    ALSO_TEST.NLP_FUNCTIONS = false
 
     // Thorough after()/before()/between() tests.
     // NOTE: can take a longer time.
-    TEST_CTX.ALSO_TESTBEFORE_AFTER_BETWEEN = true
+    ALSO_TEST.BEFORE_AFTER_BETWEEN = true
 
-    TEST_CTX.ALSO_TESTSUBSECOND_PRECISION = false
+    ALSO_TEST.SUBSECOND_PRECISION = false
   })
 
+  const basicRule = [
+    'DTSTART:19970902T090000Z',
+    'RRULE:FREQ=YEARLY;COUNT=3',
+  ].join('\n')
+
   it('parses an rrule', () => {
-    expect(
-      rrulestr('DTSTART:19970902T090000Z\n' + 'RRULE:FREQ=YEARLY;COUNT=3\n'),
-    ).toBeInstanceOf(RRule)
+    expect(rrulestr(basicRule)).toBeInstanceOf(RRule)
+  })
+
+  it('parses an rruleset when forceset=true', () => {
+    expect(rrulestr(basicRule, { forceset: true })).toBeInstanceOf(RRuleSet)
   })
 
   it('parses an rrule without frequency', () => {
     const rRuleString = 'DTSTART:19970902T090000Z'
-    const parsedRRuleSet = rrulestr(rRuleString, {
-      forceset: true,
-    }) as RRuleSet
-    expect(parsedRRuleSet.toString()).toBe(rRuleString)
 
-    const parsedRRule = rrulestr(rRuleString) as RRule
+    const parsedRRule = rrulestr(rRuleString)
     expect(parsedRRule.toString()).toBe(rRuleString)
-  })
 
-  it('parses an rruleset when forceset=true', () => {
-    expect(
-      rrulestr('DTSTART:19970902T090000Z\n' + 'RRULE:FREQ=YEARLY;COUNT=3\n', {
-        forceset: true,
-      }),
-    ).toBeInstanceOf(RRuleSet)
+    const parsedRRuleSet = rrulestr(rRuleString, { forceset: true })
+    expect(parsedRRuleSet.toString()).toBe(rRuleString)
   })
 
   it('parses an rruleset when there are multiple rrules', () => {
@@ -57,19 +57,15 @@ describe('rrulestr', function () {
     ).toBeInstanceOf(RRuleSet)
   })
 
-  testRecurring(
-    'testStr',
-    rrulestr('DTSTART:19970902T090000Z\n' + 'RRULE:FREQ=YEARLY;COUNT=3\n'),
-    [
-      datetime(1997, 9, 2, 9, 0),
-      datetime(1998, 9, 2, 9, 0),
-      datetime(1999, 9, 2, 9, 0),
-    ],
-  )
+  testRecurring('testStr', rrulestr(basicRule), [
+    datetime(1997, 9, 2, 9, 0),
+    datetime(1998, 9, 2, 9, 0),
+    datetime(1999, 9, 2, 9, 0),
+  ])
 
   testRecurring(
     'testStrCase',
-    rrulestr('dtstart:19970902T090000Z\n' + 'rrule:freq=yearly;count=3\n'),
+    rrulestr('dtstart:19970902T090000Z rrule:freq=yearly;count=3'),
     [
       datetime(1997, 9, 2, 9, 0),
       datetime(1998, 9, 2, 9, 0),
@@ -79,7 +75,7 @@ describe('rrulestr', function () {
 
   testRecurring(
     'testStrSpaces',
-    rrulestr(' DTSTART:19970902T090000Z ' + ' RRULE:FREQ=YEARLY;COUNT=3 '),
+    rrulestr(' DTSTART:19970902T090000Z  RRULE:FREQ=YEARLY;COUNT=3 '),
     [
       datetime(1997, 9, 2, 9, 0),
       datetime(1998, 9, 2, 9, 0),
@@ -90,7 +86,9 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSpacesAndLines',
     rrulestr(
-      ' DTSTART:19970902T090000Z \n' + ' \n RRULE:FREQ=YEARLY;COUNT=3 \n',
+      [' DTSTART:19970902T090000Z ', '', ' RRULE:FREQ=YEARLY;COUNT=3 '].join(
+        '\n',
+      ),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -101,7 +99,7 @@ describe('rrulestr', function () {
 
   testRecurring(
     'testStrNoDTStart',
-    rrulestr('RRULE:FREQ=YEARLY;COUNT=3\n', {
+    rrulestr('RRULE:FREQ=YEARLY;COUNT=3', {
       dtstart: parse('19970902T090000'),
     }),
     [
@@ -113,7 +111,7 @@ describe('rrulestr', function () {
 
   testRecurring(
     'testStrValueOnly',
-    rrulestr('FREQ=YEARLY;COUNT=3\n', {
+    rrulestr('FREQ=YEARLY;COUNT=3', {
       dtstart: parse('19970902T090000'),
     }),
     [
@@ -125,7 +123,7 @@ describe('rrulestr', function () {
 
   testRecurring(
     'testStrUnfold',
-    rrulestr('FREQ=YEA\n RLY;COUNT=3\n', {
+    rrulestr(['FREQ=YEA', ' RLY;COUNT=3'].join('\n'), {
       unfold: true,
       dtstart: parse('19970902T090000'),
     }),
@@ -139,9 +137,11 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSet',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=2;BYDAY=TU\n' +
-        'RRULE:FREQ=YEARLY;COUNT=1;BYDAY=TH\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RRULE:FREQ=YEARLY;COUNT=2;BYDAY=TU',
+        'RRULE:FREQ=YEARLY;COUNT=1;BYDAY=TH',
+      ].join('\n'),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -153,10 +153,12 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSetDate',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=1;BYDAY=TU\n' +
-        'RDATE:19970904T090000Z\n' +
-        'RDATE:19970909T090000Z\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RRULE:FREQ=YEARLY;COUNT=1;BYDAY=TU',
+        'RDATE:19970904T090000Z',
+        'RDATE:19970909T090000Z',
+      ].join('\n'),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -168,9 +170,11 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSetExRule',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\n' +
-        'EXRULE:FREQ=YEARLY;COUNT=3;BYDAY=TH\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH',
+        'EXRULE:FREQ=YEARLY;COUNT=3;BYDAY=TH',
+      ].join('\n'),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -182,11 +186,13 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSetExDate',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\n' +
-        'EXDATE:19970904T090000Z\n' +
-        'EXDATE:19970911T090000Z\n' +
-        'EXDATE:19970918T090000Z\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH',
+        'EXDATE:19970904T090000Z',
+        'EXDATE:19970911T090000Z',
+        'EXDATE:19970918T090000Z',
+      ].join('\n'),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -198,16 +204,18 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSetDateAndExDate',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RDATE:19970902T090000Z\n' +
-        'RDATE:19970904T090000Z\n' +
-        'RDATE:19970909T090000Z\n' +
-        'RDATE:19970911T090000Z\n' +
-        'RDATE:19970916T090000Z\n' +
-        'RDATE:19970918T090000Z\n' +
-        'EXDATE:19970904T090000Z\n' +
-        'EXDATE:19970911T090000Z\n' +
-        'EXDATE:19970918T090000Z\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RDATE:19970902T090000Z',
+        'RDATE:19970904T090000Z',
+        'RDATE:19970909T090000Z',
+        'RDATE:19970911T090000Z',
+        'RDATE:19970916T090000Z',
+        'RDATE:19970918T090000Z',
+        'EXDATE:19970904T090000Z',
+        'EXDATE:19970911T090000Z',
+        'EXDATE:19970918T090000Z',
+      ].join('\n'),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -219,14 +227,16 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrSetDateAndExRule',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RDATE:19970902T090000Z\n' +
-        'RDATE:19970904T090000Z\n' +
-        'RDATE:19970909T090000Z\n' +
-        'RDATE:19970911T090000Z\n' +
-        'RDATE:19970916T090000Z\n' +
-        'RDATE:19970918T090000Z\n' +
-        'EXRULE:FREQ=YEARLY;COUNT=3;BYDAY=TH\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RDATE:19970902T090000Z',
+        'RDATE:19970904T090000Z',
+        'RDATE:19970909T090000Z',
+        'RDATE:19970911T090000Z',
+        'RDATE:19970916T090000Z',
+        'RDATE:19970918T090000Z',
+        'EXRULE:FREQ=YEARLY;COUNT=3;BYDAY=TH',
+      ].join('\n'),
     ),
     [
       datetime(1997, 9, 2, 9, 0),
@@ -238,10 +248,10 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrKeywords',
     rrulestr(
-      'DTSTART:19970902T030000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=3;INTERVAL=3;' +
-        'BYMONTH=3;byweekday=TH;BYMONTHDAY=3;' +
-        'BYHOUR=3;BYMINUTE=3;BYSECOND=3\n',
+      [
+        'DTSTART:19970902T030000Z',
+        'RRULE:FREQ=YEARLY;COUNT=3;INTERVAL=3;BYMONTH=3;byweekday=TH;BYMONTHDAY=3;BYHOUR=3;BYMINUTE=3;BYSECOND=3',
+      ].join('\n'),
     ),
     [
       datetime(2033, 3, 3, 3, 3, 3),
@@ -253,8 +263,10 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrNWeekDay',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=3;BYDAY=1TU,-1TH\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RRULE:FREQ=YEARLY;COUNT=3;BYDAY=1TU,-1TH',
+      ].join('\n'),
     ),
     [
       datetime(1997, 12, 25, 9, 0),
@@ -266,8 +278,10 @@ describe('rrulestr', function () {
   testRecurring(
     'testStrNWeekDayLarge',
     rrulestr(
-      'DTSTART:19970902T090000Z\n' +
-        'RRULE:FREQ=YEARLY;COUNT=3;BYDAY=13TU,-13TH\n',
+      [
+        'DTSTART:19970902T090000Z',
+        'RRULE:FREQ=YEARLY;COUNT=3;BYDAY=13TU,-13TH',
+      ].join('\n'),
     ),
     [
       datetime(1997, 10, 2, 9, 0),
@@ -277,7 +291,9 @@ describe('rrulestr', function () {
   )
 
   it('parses without TZID', () => {
-    const rrule = rrulestr('DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY')
+    const rrule = rrulestr(
+      ['DTSTART:19970902T090000', 'RRULE:FREQ=WEEKLY'].join('\n'),
+    )
 
     expect(rrule.origOptions).toMatchObject({
       freq: Frequency.WEEKLY,
@@ -287,8 +303,10 @@ describe('rrulestr', function () {
 
   it('parses TZID', () => {
     const rrule = rrulestr(
-      'DTSTART;TZID=America/New_York:19970902T090000\n' +
+      [
+        'DTSTART;TZID=America/New_York:19970902T090000',
         'RRULE:FREQ=DAILY;UNTIL=19980902T090000',
+      ].join('\n'),
     )
 
     expect(rrule.origOptions).toMatchObject({
@@ -340,49 +358,43 @@ describe('rrulestr', function () {
   })
 
   it('parses an RDATE with no TZID param', () => {
-    const rruleset = rrulestr(
-      'DTSTART:20180719T111500Z\n' +
-        'RRULE:FREQ=DAILY;INTERVAL=1\n' +
-        'RDATE:20180720T111500Z\n' +
-        'EXDATE:20180721T111500Z',
-    ) as RRuleSet
-
-    expect(rruleset.valueOf()).toEqual([
+    const input = [
       'DTSTART:20180719T111500Z',
       'RRULE:FREQ=DAILY;INTERVAL=1',
       'RDATE:20180720T111500Z',
       'EXDATE:20180721T111500Z',
-    ])
+    ]
+
+    const rruleset = rrulestr(input.join('\n'))
+    expect(rruleset.valueOf()).toEqual(input)
   })
 
   it('parses an RDATE with a TZID param', () => {
-    const rruleset = rrulestr(
-      'DTSTART;TZID=America/Los_Angeles:20180719T111500\n' +
-        'RRULE:FREQ=DAILY;INTERVAL=1\n' +
-        'RDATE;TZID=America/Los_Angeles:20180720T111500\n' +
-        'EXDATE;TZID=America/Los_Angeles:20180721T111500',
-    ) as RRuleSet
-
-    expect(rruleset.valueOf()).toEqual([
+    const input = [
       'DTSTART;TZID=America/Los_Angeles:20180719T111500',
       'RRULE:FREQ=DAILY;INTERVAL=1',
       'RDATE;TZID=America/Los_Angeles:20180720T111500',
       'EXDATE;TZID=America/Los_Angeles:20180721T111500',
-    ])
+    ]
+
+    const rruleset = rrulestr(input.join('\n'))
+    expect(rruleset.valueOf()).toEqual(input)
   })
 })
 
 describe('parseInput', () => {
   it('parses an input into a structure', () => {
     const output = parseInput(
-      'DTSTART;TZID=America/New_York:19970902T090000\n' +
-        'RRULE:FREQ=DAILY;UNTIL=19980902T090000;INTERVAL=1\n' +
-        'RDATE:19970902T090000Z\n' +
-        'RDATE:19970904T090000Z\n' +
-        'EXDATE:19970904T090000Z\n' +
-        'EXRULE:FREQ=WEEKLY;INTERVAL=2\n',
-      {},
+      [
+        'DTSTART;TZID=America/New_York:19970902T090000',
+        'RRULE:FREQ=DAILY;UNTIL=19980902T090000;INTERVAL=1',
+        'RDATE:19970902T090000Z',
+        'RDATE:19970904T090000Z',
+        'EXDATE:19970904T090000Z',
+        'EXRULE:FREQ=WEEKLY;INTERVAL=2',
+      ].join('\n'),
     )
+
     expect(output).toMatchObject({
       dtstart: datetime(1997, 9, 2, 9, 0, 0),
       tzid: 'America/New_York',

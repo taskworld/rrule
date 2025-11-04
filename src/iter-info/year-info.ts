@@ -1,19 +1,19 @@
-import { ParsedOptions } from '../types'
-import { datetime, getWeekday, isLeapYear, toOrdinal } from '../dateutil'
-import { empty, repeat, pymod, includes } from '../helpers'
+import { datetime, getWeekday, isLeapYear, toOrdinal } from '../date-util'
+import { empty, includes, pymod, repeat } from '../helpers'
 import {
   M365MASK,
-  MDAY365MASK,
-  NMDAY365MASK,
-  WDAYMASK,
   M365RANGE,
   M366MASK,
-  MDAY366MASK,
-  NMDAY366MASK,
   M366RANGE,
+  MDAY365MASK,
+  MDAY366MASK,
+  NMDAY365MASK,
+  NMDAY366MASK,
+  WDAYMASK,
 } from '../masks'
+import { ParsedOptions } from '../types'
 
-export interface YearInfo {
+export type YearInfo = {
   yearlen: 365 | 366
   nextyearlen: 365 | 366
   yearordinal: number

@@ -1,7 +1,7 @@
-import { RRule } from '../src'
-import { optionsToString } from '../src/optionstostring'
-import { DateFormatter } from '../src/nlp/totext'
-import { datetime } from './lib/utils'
+import { datetime } from '../src/date-util'
+import { DateFormatter } from '../src/nlp/to-text'
+import { optionsToString } from '../src/options-to-string'
+import { RRule } from '../src/rrule'
 
 const texts = [
   ['Every day', 'RRULE:FREQ=DAILY'],

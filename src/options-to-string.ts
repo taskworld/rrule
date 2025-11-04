@@ -1,9 +1,9 @@
+import { timeToUntilString } from './date-util'
+import { DateWithZone } from './date-with-zone'
+import { includes, isArray, isNumber, isPresent, toArray } from './helpers'
+import { DEFAULT_OPTIONS, RRule } from './rrule'
 import { Options } from './types'
-import { RRule, DEFAULT_OPTIONS } from './rrule'
-import { includes, isPresent, isArray, isNumber, toArray } from './helpers'
 import { Weekday } from './weekday'
-import { timeToUntilString } from './dateutil'
-import { DateWithZone } from './datewithzone'
 
 export function optionsToString(options: Partial<Options>) {
   const rrule: string[][] = []

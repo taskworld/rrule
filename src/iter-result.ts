@@ -1,4 +1,4 @@
-import { QueryMethodTypes, IterResultType } from './types'
+import { IterResultType, QueryMethodTypes } from './types'
 
 // =============================================================================
 // Results
@@ -17,10 +17,10 @@ export interface IterArgs {
  * This class helps us to emulate python's generators, sorta.
  */
 export default class IterResult<M extends QueryMethodTypes> {
-  public readonly method: M
-  public readonly args: Partial<IterArgs>
-  public readonly minDate: Date | null = null
-  public readonly maxDate: Date | null = null
+  public method: M
+  public args: Partial<IterArgs>
+  public minDate: Date | null = null
+  public maxDate: Date | null = null
   public _result: Date[] = []
   public total = 0
 
@@ -40,14 +40,6 @@ export default class IterResult<M extends QueryMethodTypes> {
     }
   }
 
-  /**
-   * Possibly adds a date into the result.
-   *
-   * @param {Date} date - the date isn't necessarly added to the result
-   * list (if it is too late/too early)
-   * @return {Boolean} true if it makes sense to continue the iteration
-   * false if we're done.
-   */
   accept(date: Date) {
     ++this.total
     const tooEarly = this.minDate && date < this.minDate
@@ -67,28 +59,19 @@ export default class IterResult<M extends QueryMethodTypes> {
     return this.add(date)
   }
 
-  /**
-   *
-   * @param {Date} date that is part of the result.
-   * @return {Boolean} whether we are interested in more values.
-   */
   add(date: Date) {
     this._result.push(date)
     return true
   }
 
-  /**
-   * 'before' and 'after' return only one date, whereas 'all'
-   * and 'between' an array.
-   *
-   * @return {Date,Array?}
-   */
   getValue(): IterResultType<M> {
     const res = this._result
+
     switch (this.method) {
       case 'all':
       case 'between':
         return res as IterResultType<M>
+
       case 'before':
       case 'after':
       default:

@@ -1,11 +1,11 @@
-import { DateTime, DurationUnit } from 'luxon'
+import { DateTime } from 'luxon'
 
-import { Frequency, Options, ParsedOptions, QueryMethodTypes } from '../types'
-import IterResult from '../iterresult'
 import { notEmpty } from '../helpers'
+import IterResult from '../iter-result'
+import { Frequency, Options, ParsedOptions, QueryMethodTypes } from '../types'
 import { Weekday } from '../weekday'
 
-const UNIT_BY_FREQUENCY: Record<Frequency, Required<DurationUnit>> = {
+const UNIT_BY_FREQUENCY = {
   [Frequency.YEARLY]: 'year',
   [Frequency.MONTHLY]: 'month',
   [Frequency.WEEKLY]: 'week',
@@ -13,9 +13,9 @@ const UNIT_BY_FREQUENCY: Record<Frequency, Required<DurationUnit>> = {
   [Frequency.HOURLY]: 'hour',
   [Frequency.MINUTELY]: 'minute',
   [Frequency.SECONDLY]: 'second',
-}
+} as const
 
-const optimize = (
+function optimize(
   frequency: Frequency,
   dtstart: Date,
   interval: number,
@@ -24,7 +24,7 @@ const optimize = (
   count?: number,
   exdateHash?: { [k: number]: boolean },
   evalExdate?: (after: Date, before: Date) => void,
-) => {
+) {
   const frequencyUnit = UNIT_BY_FREQUENCY[frequency]
   const minDateTime = DateTime.fromJSDate(minDate ? minDate : maxDate, {
     zone: 'UTC',
@@ -65,7 +65,7 @@ const optimize = (
   }
 }
 
-export function optimiseOptions<M extends QueryMethodTypes>(
+export function optimizeOptions<M extends QueryMethodTypes>(
   iterResult: IterResult<M>,
   parsedOptions: ParsedOptions,
   origOptions: Partial<Options>,

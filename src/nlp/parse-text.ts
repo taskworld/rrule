@@ -1,14 +1,14 @@
-import ENGLISH, { Language } from './i18n'
 import { RRule } from '../rrule'
 import { ByWeekday, Options } from '../types'
 import { WeekdayStr } from '../weekday'
+import ENGLISH, { Language } from './i18n'
 
 // =============================================================================
 // Parser
 // =============================================================================
 
 class Parser {
-  private readonly rules: { [k: string]: RegExp }
+  private rules: { [k: string]: RegExp }
   public text: string
   public symbol: string | null
   public value: RegExpExecArray | null

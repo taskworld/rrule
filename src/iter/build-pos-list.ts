@@ -1,9 +1,9 @@
-import { combine, fromOrdinal, sort } from '../dateutil'
-import Iterinfo from '../iterinfo/index'
-import { pymod, isPresent, includes } from '../helpers'
+import { combine, fromOrdinal, sort } from '../date-util'
 import { Time } from '../datetime'
+import { includes, isPresent, pymod } from '../helpers'
+import Iterinfo from '../iter-info/index'
 
-export function buildPoslist(
+export function buildPosList(
   bysetpos: number[],
   timeset: Time[],
   start: number,

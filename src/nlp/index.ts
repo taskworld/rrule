@@ -1,8 +1,8 @@
-import ToText, { DateFormatter, GetText } from './totext'
-import parseText from './parsetext'
 import { RRule } from '../rrule'
 import { Frequency } from '../types'
 import ENGLISH, { Language } from './i18n'
+import parseText from './parse-text'
+import ToText, { DateFormatter, GetText } from './to-text'
 
 /* !
  * rrule.js - Library for working with recurrence rules for calendar dates.
@@ -138,4 +138,4 @@ export interface Nlp {
   toText: typeof toText
 }
 
-export { fromText, parseText, isFullyConvertible, toText }
+export { fromText, isFullyConvertible, parseText, toText }

@@ -1,19 +1,19 @@
-import IterResult from '../iterresult'
+import { combine, fromOrdinal, MAXYEAR } from '../date-util'
+import { DateWithZone } from '../date-with-zone'
+import { DateTime, Time } from '../datetime'
+import { includes, isPresent, notEmpty } from '../helpers'
+import Iterinfo from '../iter-info/index'
+import IterResult from '../iter-result'
+import { buildTimeset } from '../parse-options'
+import { RRule } from '../rrule'
 import {
   freqIsDailyOrGreater,
   Options,
   ParsedOptions,
   QueryMethodTypes,
 } from '../types'
-import { combine, fromOrdinal, MAXYEAR } from '../dateutil'
-import Iterinfo from '../iterinfo/index'
-import { RRule } from '../rrule'
-import { buildTimeset } from '../parseoptions'
-import { includes, isPresent, notEmpty } from '../helpers'
-import { DateWithZone } from '../datewithzone'
-import { buildPoslist } from './poslist'
-import { DateTime, Time } from '../datetime'
-import { optimiseOptions } from './optimiseOptions'
+import { buildPosList } from './build-pos-list'
+import { optimizeOptions } from './optimize-options'
 
 export function iter<M extends QueryMethodTypes>(
   iterResult: IterResult<M>,
@@ -22,13 +22,14 @@ export function iter<M extends QueryMethodTypes>(
   exdateHash?: { [k: number]: boolean },
   evalExdate?: (after: Date, before: Date) => void,
 ) {
-  parsedOptions = optimiseOptions(
+  parsedOptions = optimizeOptions(
     iterResult,
     parsedOptions,
     origOptions,
     exdateHash,
     evalExdate,
   )
+
   const { freq, dtstart, interval, until, bysetpos } = parsedOptions
 
   let count = parsedOptions.count
@@ -53,7 +54,7 @@ export function iter<M extends QueryMethodTypes>(
     const filtered = removeFilteredDays(dayset, start, end, ii, parsedOptions)
 
     if (notEmpty(bysetpos)) {
-      const poslist = buildPoslist(bysetpos, timeset, start, end, ii, dayset)
+      const poslist = buildPosList(bysetpos, timeset, start, end, ii, dayset)
 
       for (let j = 0; j < poslist.length; j++) {
         const res = poslist[j]

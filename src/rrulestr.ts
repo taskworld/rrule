@@ -1,9 +1,9 @@
+import { untilStringToDate } from './date-util'
+import { includes, split } from './helpers'
+import { parseDtstart, parseString } from './parse-string'
 import { RRule } from './rrule'
 import { RRuleSet } from './rruleset'
-import { untilStringToDate } from './dateutil'
-import { includes, split } from './helpers'
 import { Options } from './types'
-import { parseString, parseDtstart } from './parsestring'
 
 export interface RRuleStrOptions {
   dtstart: Date | null
@@ -27,13 +27,15 @@ const DEFAULT_OPTIONS: RRuleStrOptions = {
   tzid: null,
 }
 
-export function parseInput(s: string, options: Partial<RRuleStrOptions>) {
+export function parseInput(s: string, options: Partial<RRuleStrOptions> = {}) {
   const rrulevals: Partial<Options>[] = []
   let rdatevals: Date[] = []
+
   const exrulevals: Partial<Options>[] = []
   let exdatevals: Date[] = []
 
   const parsedDtstart = parseDtstart(s)
+
   const { dtstart } = parsedDtstart
   let { tzid } = parsedDtstart
 

@@ -1,30 +1,27 @@
-import {
-  parse,
-  datetime,
-  testRecurring,
-  expectedDate,
-  TEST_CTX,
-} from './lib/utils'
-import { RRule, rrulestr, Frequency } from '../src/index'
-import { set as setMockDate, reset as resetMockDate } from 'mockdate'
+import { reset as resetMockDate, set as setMockDate } from 'mockdate'
+import { datetime } from '../src/date-util'
+import { RRule } from '../src/rrule'
+import { rrulestr } from '../src/rrulestr'
+import { Frequency } from '../src/types'
+import { ALSO_TEST, expectedDate, parse, testRecurring } from './lib/utils'
 
 describe('RRule', function () {
   beforeAll(() => {
     // Enable additional toString() / fromString() tests
     // for each testRecurring().
-    TEST_CTX.ALSO_TESTSTRING_FUNCTIONS = true
+    ALSO_TEST.STRING_FUNCTIONS = true
 
     // Enable additional toText() / fromText() tests
     // for each testRecurring().
     // Many of the tests fail because the conversion is only approximate,
     // but it gives an idea about how well or bad it converts.
-    TEST_CTX.ALSO_TESTNLP_FUNCTIONS = false
+    ALSO_TEST.NLP_FUNCTIONS = false
 
     // Thorough after()/before()/between() tests.
     // NOTE: can take a longer time.
-    TEST_CTX.ALSO_TESTBEFORE_AFTER_BETWEEN = true
+    ALSO_TEST.BEFORE_AFTER_BETWEEN = true
 
-    TEST_CTX.ALSO_TESTSUBSECOND_PRECISION = true
+    ALSO_TEST.SUBSECOND_PRECISION = true
   })
 
   it('rrulestr https://github.com/jkbrzt/rrule/pull/164', function () {

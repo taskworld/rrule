@@ -1,6 +1,7 @@
-import { DateWithZone } from '../src/datewithzone'
-import { set as setMockDate, reset as resetMockDate } from 'mockdate'
-import { datetime, expectedDate } from './lib/utils'
+import { reset as resetMockDate, set as setMockDate } from 'mockdate'
+import { datetime } from '../src/date-util'
+import { DateWithZone } from '../src/date-with-zone'
+import { expectedDate } from './lib/utils'
 
 describe('toString', () => {
   it('returns the date when no tzid is present', () => {

@@ -1,8 +1,8 @@
-import { sort, timeToUntilString } from './dateutil'
+import { sort, timeToUntilString } from './date-util'
 import { includes } from './helpers'
-import IterResult from './iterresult'
-import { iterSet } from './iterset'
-import { optionsToString } from './optionstostring'
+import IterResult from './iter-result'
+import { iterSet } from './iter-set'
+import { optionsToString } from './options-to-string'
 import { RRule } from './rrule'
 import { rrulestr } from './rrulestr'
 import { IterResultType, QueryMethodTypes } from './types'
@@ -27,10 +27,10 @@ function createGetterSetter<T>(fieldName: string) {
 }
 
 export class RRuleSet extends RRule {
-  public readonly _rrule: RRule[]
-  public readonly _rdate: Date[]
-  public readonly _exrule: RRule[]
-  public readonly _exdate: Date[]
+  public _rrule: RRule[]
+  public _rdate: Date[]
+  public _exrule: RRule[]
+  public _exdate: Date[]
 
   private _dtstart?: Date | null | undefined
   private _tzid?: string

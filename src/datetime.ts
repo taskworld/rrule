@@ -1,6 +1,6 @@
-import { ParsedOptions, Frequency } from './types'
-import { pymod, divmod, empty, includes } from './helpers'
-import { getWeekday, MAXYEAR, monthRange } from './dateutil'
+import { getWeekday, MAXYEAR, monthRange } from './date-util'
+import { divmod, empty, includes, pymod } from './helpers'
+import { Frequency, ParsedOptions } from './types'
 
 export class Time {
   public hour: number
