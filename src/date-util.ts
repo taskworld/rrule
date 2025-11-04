@@ -1,4 +1,3 @@
-import { differenceInDays } from 'date-fns'
 import { Time } from './datetime'
 
 type Datelike = Pick<Date, 'getTime'>
@@ -39,7 +38,6 @@ export function isLeapYear(year: number) {
 
 const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-// faster than date-fns
 export function getDaysInMonth(date: Date) {
   const month = date.getUTCMonth()
   return month === 1 && isLeapYear(date.getUTCFullYear())
@@ -62,6 +60,10 @@ const PY_WEEKDAYS = [6, 0, 1, 2, 3, 4, 5]
 
 export function getWeekday(date: Date) {
   return PY_WEEKDAYS[date.getUTCDay()]
+}
+
+export function differenceInDays(date1: Date, date2: Date) {
+  return Math.round((date1.getTime() - date2.getTime()) / ONE_DAY)
 }
 
 // ---
